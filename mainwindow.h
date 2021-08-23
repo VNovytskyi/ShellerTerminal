@@ -17,6 +17,12 @@ class MainWindow : public QMainWindow
 
     Core *core = nullptr;
 
+    QList<QString> portsNames;
+    bool continueUpdatedSerialPorts = true;
+    QFuture<void> updateSerialPortsFuture;
+    void updateSerialPortsNames();
+
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -28,6 +34,5 @@ private:
     Ui::MainWindow *ui;
 
 signals:
-
 };
 #endif // MAINWINDOW_H

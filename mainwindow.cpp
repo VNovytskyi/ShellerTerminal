@@ -3,7 +3,6 @@
 
 #include <QDebug>
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -12,10 +11,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     core = new Core();
     core->start();
+
+    updateSerialPortsFuture = QtConcurrent::run(this, &MainWindow::updateSerialPortsNames);
 }
 
 MainWindow::~MainWindow()
 {
+    continueUpdatedSerialPorts = false;
+    updateSerialPortsFuture.waitForFinished();
+
     core->quit();
     core->wait();
 
@@ -26,4 +30,29 @@ MainWindow::~MainWindow()
 void MainWindow::on_serialButton_clicked()
 {
     core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText());
+}
+
+void MainWindow::updateSerialPortsNames()
+{
+    while(continueUpdatedSerialPorts) {
+        static clock_t time = clock();
+        if ((clock() - time) >= 1000) {
+            time = clock();
+            auto info = QSerialPortInfo::availablePorts();
+            QList<QString> currentPortsNames;
+            for (auto &el: info) {
+                currentPortsNames.push_back(el.portName());
+            }
+
+            if (currentPortsNames != portsNames) {
+                qDebug() << "Changed";
+                portsNames = currentPortsNames;
+                ui->serialName_ComboBox->clear();
+                if (currentPortsNames.size() > 0) {
+                    ui->serialName_ComboBox->addItems(currentPortsNames);
+                    ui->serialName_ComboBox->setCurrentIndex(0);
+                }
+            }
+        }
+    }
 }

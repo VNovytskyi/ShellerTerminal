@@ -23,7 +23,10 @@ void Core::run()
     serial->start();
 
     while(runEnabled) {
-        updateSerialPortNames();
+        static clock_t time = clock();
+        if ((clock() - time) >= 1000) {
+            time = clock();
+        }
     }
 
     qDebug() << "Core::run end";
@@ -40,11 +43,3 @@ void Core::quit()
     runEnabled = false;
 }
 
-void Core::updateSerialPortNames()
-{
-    static clock_t updateSerialPorts = clock();
-    if ((clock() - updateSerialPorts) >= 1000) {
-        updateSerialPorts = clock();
-        qDebug() << "Update serialPorts";
-    }
-}

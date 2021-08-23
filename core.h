@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QThread>
 #include <QObject>
+#include <QSerialPortInfo>
 
 #include "serialport.h"
 
@@ -13,8 +14,6 @@ class Core : public QThread
 
     SerialPort *serial = nullptr;
     bool runEnabled = true;
-
-    void updateSerialPortNames();
 
 public:
     Core();
