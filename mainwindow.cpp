@@ -29,10 +29,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_serialButton_clicked()
 {
-    if (core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText())) {
-        qDebug() << "SerialPorts successffull open";
+    if (ui->serialButton->text() == "Connect") {
+        if (core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText())) {
+            qDebug() << "SerialPorts successffull open";
+            ui->serialButton->setText("Disconnect");
+        }
     } else {
-        qDebug() << "SerialPorts cannot open";
+        core->getSerial()->disconnect();
+        ui->serialButton->setText("Connect");
     }
 }
 
@@ -61,3 +65,23 @@ void MainWindow::updateSerialPortsNames()
         QThread().currentThread()->msleep(1);
     }
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    QByteArray testData;
+    testData.push_back(12);
+    testData.push_back(65);
+    testData.push_back(98);
+    core->getSerial()->write(testData);
+}
+
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QByteArray testData;
+    testData.push_back(32);
+    testData.push_back(12);
+    testData.push_back(24);
+    core->getSerial()->write(testData);
+}
+

@@ -10,22 +10,42 @@ void SerialPort::run()
 {
     qDebug() << "SerialPort::run begin";
 
+    serial = new QSerialPort;
+
+    sheller_t shell;
+    sheller_init(&shell);
+
     while(runEnabled) {
-        if (serial.isOpen()) {
+        if (serial->isOpen()) {
             if (!transmittQueue.isEmpty()) {
-                QByteArray data = transmittQueue.first();
+                QByteArray txData = transmittQueue.first();
                 transmittQueue.pop_front();
-                serial.write(data);
-                serial.waitForBytesWritten();
+
+                qDebug() << "Data to send: " << txData.toHex('.');
+                uint8_t wrapperedDataBuff[SHELLER_PACKAGE_LENGTH] = {0};
+                sheller_wrap(&shell, (uint8_t*)txData.data(), txData.size(), wrapperedDataBuff);
+                QByteArray wrapperedData((char*)wrapperedDataBuff, SHELLER_PACKAGE_LENGTH);
+                qDebug() << "Wrappered data: " << wrapperedData.toHex('.');
+
+                serial->write(wrapperedData);
+                serial->waitForBytesWritten(1);
             }
 
-            if (serial.bytesAvailable() > 0) {
-                serial.waitForReadyRead();
-                QByteArray receiveData = serial.readAll();
+            if (serial->bytesAvailable() > 0) {
+                serial->waitForReadyRead(1);
+                QByteArray receiveData = serial->readAll();
 
-                //push in sheller
-                //if sheller find the package push in receiveQueue
-                receiveQueue.push_back(receiveData);
+                for (int i = 0; i < receiveData.size(); ++i) {
+                    sheller_push(&shell, receiveData[i]);
+                }
+            }
+
+
+            uint8_t receivedDataBuff[SHELLER_USEFULL_DATA_LENGTH] = {0};
+            if (sheller_read(&shell, receivedDataBuff)) {
+                QByteArray receivedData((char*)receivedDataBuff, SHELLER_USEFULL_DATA_LENGTH);
+                qDebug() << "Received data: " << receivedData.toHex('.');
+                receiveQueue.push_back(receivedData);
             }
         }
 
@@ -38,15 +58,15 @@ void SerialPort::run()
 bool SerialPort::connectTo(QString portName, QString portSpeed)
 {
     qDebug() << "connectTo " << portName << " ," << portSpeed;
-    serial.setPortName(portName);
-    serial.setBaudRate(portSpeed.toInt());
-    return serial.open(QIODevice::ReadWrite);
+    serial->setPortName(portName);
+    serial->setBaudRate(portSpeed.toInt());
+    return serial->open(QIODevice::ReadWrite);
 }
 
 void SerialPort::disconnect()
 {
-    serial.close();
-    serial.clear();
+    serial->clear();
+    serial->close();
 }
 
 QByteArray SerialPort::read()
@@ -63,7 +83,6 @@ QByteArray SerialPort::read()
 
 void SerialPort::write(QByteArray &data)
 {
-    //push data in sheller than in transmittQueue
     transmittQueue.push_back(data);
 }
 

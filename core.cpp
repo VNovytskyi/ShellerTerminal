@@ -23,10 +23,8 @@ void Core::run()
     serial->start();
 
     while(runEnabled) {
-        static clock_t time = clock();
-        if ((clock() - time) >= 1000) {
-            time = clock();
-            qDebug() << "Core::run work";
+        if (!serial->isEmpty()) {
+            qDebug() << "BL: Receive: " << serial->read().toHex('.');
         }
         QThread().currentThread()->msleep(1);
     }

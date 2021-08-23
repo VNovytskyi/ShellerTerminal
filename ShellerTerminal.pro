@@ -12,12 +12,14 @@ SOURCES += \
     core.cpp \
     main.cpp \
     mainwindow.cpp \
-    serialport.cpp
+    serialport.cpp \
+    sheller.cpp
 
 HEADERS += \
     core.h \
     mainwindow.h \
-    serialport.h
+    serialport.h \
+    sheller.h
 
 FORMS += \
     mainwindow.ui
