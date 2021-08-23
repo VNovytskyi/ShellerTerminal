@@ -2,8 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtConcurrent/QtConcurrent>
 
 #include "core.h"
+#include "serialport.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

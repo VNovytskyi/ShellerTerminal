@@ -3,6 +3,7 @@
 
 #include <QDebug>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -24,5 +25,5 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_serialButton_clicked()
 {
-    qDebug() << "Connect button clicked";
+    core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText());
 }

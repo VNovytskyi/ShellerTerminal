@@ -6,22 +6,45 @@
 Core::Core()
 {
     qDebug() << "Core::constructor called";
+    serial = new SerialPort;
+}
+
+Core::~Core()
+{
+    serial->quit();
+    serial->wait();
+    delete serial;
 }
 
 void Core::run()
 {
     qDebug() << "Core::run begin";
 
+    serial->start();
+
     while(runEnabled) {
-        QThread().currentThread()->msleep(1000);
-        qDebug() << "Core::run work";
+        updateSerialPortNames();
     }
 
     qDebug() << "Core::run end";
+}
+
+SerialPort *Core::getSerial()
+{
+    return serial;
 }
 
 void Core::quit()
 {
     qDebug() << "Core::quit called";
     runEnabled = false;
+}
+
+void Core::updateSerialPortNames()
+{
+    static clock_t updateSerialPorts = clock();
+    if ((clock() - updateSerialPorts) >= 1000) {
+        updateSerialPorts = clock();
+        qDebug() << "Update serialPorts";
+    }
 }
