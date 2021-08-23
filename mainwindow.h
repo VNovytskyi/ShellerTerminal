@@ -34,6 +34,13 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_clearButton_clicked();
+
+    void on_pushButton_4_clicked();
+
+public slots:
+    void displayData(QByteArray data);
+
 private:
     Ui::MainWindow *ui;
 

@@ -21,13 +21,10 @@ void SerialPort::run()
                 QByteArray txData = transmittQueue.first();
                 transmittQueue.pop_front();
 
-                qDebug() << "Data to send: " << txData.toHex('.');
                 uint8_t wrapperedDataBuff[SHELLER_PACKAGE_LENGTH] = {0};
                 sheller_wrap(&shell, (uint8_t*)txData.data(), txData.size(), wrapperedDataBuff);
-                QByteArray wrapperedData((char*)wrapperedDataBuff, SHELLER_PACKAGE_LENGTH);
-                qDebug() << "Wrappered data: " << wrapperedData.toHex('.');
 
-                serial->write(wrapperedData);
+                serial->write(QByteArray((char*)wrapperedDataBuff, SHELLER_PACKAGE_LENGTH));
                 serial->waitForBytesWritten(1);
             }
 
@@ -40,15 +37,11 @@ void SerialPort::run()
                 }
             }
 
-
             uint8_t receivedDataBuff[SHELLER_USEFULL_DATA_LENGTH] = {0};
             if (sheller_read(&shell, receivedDataBuff)) {
-                QByteArray receivedData((char*)receivedDataBuff, SHELLER_USEFULL_DATA_LENGTH);
-                qDebug() << "Received data: " << receivedData.toHex('.');
-                receiveQueue.push_back(receivedData);
+                receiveQueue.push_back(QByteArray((char*)receivedDataBuff, SHELLER_USEFULL_DATA_LENGTH));
             }
         }
-
         QThread().currentThread()->msleep(1);
     }
 

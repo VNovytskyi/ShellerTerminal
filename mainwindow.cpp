@@ -53,7 +53,6 @@ void MainWindow::updateSerialPortsNames()
             }
 
             if (currentPortsNames != portsNames) {
-                qDebug() << "Changed";
                 portsNames = currentPortsNames;
                 ui->serialName_ComboBox->clear();
                 if (currentPortsNames.size() > 0) {
@@ -83,5 +82,26 @@ void MainWindow::on_pushButton_2_clicked()
     testData.push_back(12);
     testData.push_back(24);
     core->getSerial()->write(testData);
+}
+
+
+void MainWindow::on_clearButton_clicked()
+{
+    ui->transmitHexLine->setText("00 00 00 00 00 00 00 00");
+}
+
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    QString values = ui->transmitHexLine->text();
+
+    //прочитать все int с строки
+
+}
+
+void MainWindow::displayData(QByteArray data)
+{
+    //ui->receiveDataField-
+    //выводить текст
 }
 
