@@ -26,7 +26,9 @@ void Core::run()
         static clock_t time = clock();
         if ((clock() - time) >= 1000) {
             time = clock();
+            qDebug() << "Core::run work";
         }
+        QThread().currentThread()->msleep(1);
     }
 
     qDebug() << "Core::run end";

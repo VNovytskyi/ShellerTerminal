@@ -1,5 +1,5 @@
 #include "serialport.h"
-#include <QDebug>
+
 
 SerialPort::SerialPort()
 {
@@ -11,24 +11,65 @@ void SerialPort::run()
     qDebug() << "SerialPort::run begin";
 
     while(runEnabled) {
-        static clock_t workTime = clock();
-        if ((clock() - workTime) >= 1000) {
-            workTime = clock();
-            qDebug() << "SerialPort::run work";
+        if (serial.isOpen()) {
+            if (!transmittQueue.isEmpty()) {
+                QByteArray data = transmittQueue.first();
+                transmittQueue.pop_front();
+                serial.write(data);
+                serial.waitForBytesWritten();
+            }
+
+            if (serial.bytesAvailable() > 0) {
+                serial.waitForReadyRead();
+                QByteArray receiveData = serial.readAll();
+
+                //push in sheller
+                //if sheller find the package push in receiveQueue
+                receiveQueue.push_back(receiveData);
+            }
         }
+
+        QThread().currentThread()->msleep(1);
     }
 
     qDebug() << "SerialPort::run end";
 }
 
-void SerialPort::connectTo(QString portName, QString portSpeed)
+bool SerialPort::connectTo(QString portName, QString portSpeed)
 {
-    qDebug() << "connectTo";
+    qDebug() << "connectTo " << portName << " ," << portSpeed;
+    serial.setPortName(portName);
+    serial.setBaudRate(portSpeed.toInt());
+    return serial.open(QIODevice::ReadWrite);
 }
 
-void SerialPort::serial_connectTo(QString portName, QString portSpeed)
+void SerialPort::disconnect()
 {
-    qDebug() << "serial_connectTo";
+    serial.close();
+    serial.clear();
+}
+
+QByteArray SerialPort::read()
+{
+    QByteArray data;
+
+    if (!receiveQueue.isEmpty()) {
+        data = receiveQueue.first();
+        receiveQueue.pop_front();
+    }
+
+    return data;
+}
+
+void SerialPort::write(QByteArray &data)
+{
+    //push data in sheller than in transmittQueue
+    transmittQueue.push_back(data);
+}
+
+bool SerialPort::isEmpty()
+{
+    return receiveQueue.isEmpty();
 }
 
 void SerialPort::quit()

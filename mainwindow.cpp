@@ -29,7 +29,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_serialButton_clicked()
 {
-    core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText());
+    if (core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText())) {
+        qDebug() << "SerialPorts successffull open";
+    } else {
+        qDebug() << "SerialPorts cannot open";
+    }
 }
 
 void MainWindow::updateSerialPortsNames()
@@ -54,5 +58,6 @@ void MainWindow::updateSerialPortsNames()
                 }
             }
         }
+        QThread().currentThread()->msleep(1);
     }
 }
