@@ -28,7 +28,7 @@ public:
     void disconnect();
 
     QByteArray read();
-    void write(QByteArray &data);
+    bool write(QByteArray &data);
     bool isEmpty();
 
 public slots:

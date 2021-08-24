@@ -83,10 +83,14 @@ QByteArray SerialPort::read()
     return data;
 }
 
-void SerialPort::write(QByteArray &data)
+bool SerialPort::write(QByteArray &data)
 {
-    qDebug() << "Push";
-    transmittQueue.push_back(data);
+    if (data.length() > 0 && data.length() <= SHELLER_USEFULL_DATA_LENGTH) {
+        transmittQueue.push_back(data);
+        return true;
+    }
+
+    return false;
 }
 
 bool SerialPort::isEmpty()

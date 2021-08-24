@@ -11,12 +11,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     core = new Core();
 
-
-
     core->start();
     QObject::connect(core, &Core::appendReceivedData, this, &MainWindow::displayData);
 
     updateSerialPortsFuture = QtConcurrent::run(this, &MainWindow::updateSerialPortsNames);
+
+    setWindowIcon(QIcon("ShellerIcon.ico"));
 }
 
 MainWindow::~MainWindow()
@@ -91,15 +91,22 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_clearButton_clicked()
 {
-    ui->transmitHexLine->setText("00 00 00 00 00 00 00 00");
+    ui->transmitHexLine->setText("");
 }
-
 
 void MainWindow::on_pushButton_4_clicked()
 {
     QString values = ui->transmitHexLine->text();
+    if (values.length()) {
+        QStringList valuesList = values.split(QRegExp("\\s+"));
 
-    //прочитать все int с строки
+        QByteArray numbers;
+        for(auto &el: valuesList) {
+            numbers.push_back(el.toUInt());
+        }
+
+        core->getSerial()->write(numbers);
+    }
 
 }
 
