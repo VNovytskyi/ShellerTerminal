@@ -8,7 +8,7 @@
 #include <QSerialPort>
 #include <QQueue>
 
-#include "../../sheller/Source/sheller.h"
+#include "Sheller/Source/sheller.h"
 
 class SerialPort : public QThread
 {
