@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
+    <width>800</width>
     <height>183</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>660</width>
+    <width>800</width>
     <height>180</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>660</width>
+    <width>800</width>
     <height>183</height>
    </size>
   </property>
@@ -139,11 +139,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
-          <widget class="QPlainTextEdit" name="receiveDataField">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-          </widget>
+          <widget class="QTextEdit" name="textEdit"/>
          </item>
         </layout>
        </widget>
@@ -195,7 +191,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>660</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>

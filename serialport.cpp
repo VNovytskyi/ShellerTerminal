@@ -14,7 +14,7 @@ void SerialPort::run()
 
     sheller_t shell;
     sheller_init(&shell);
-
+uint8_t receivedDataBuff[SHELLER_USEFULL_DATA_LENGTH] = {0};
     while(runEnabled) {
         if (serial->isOpen()) {
             if (!transmittQueue.isEmpty()) {
@@ -26,23 +26,30 @@ void SerialPort::run()
 
                 serial->write(QByteArray((char*)wrapperedDataBuff, SHELLER_PACKAGE_LENGTH));
                 serial->waitForBytesWritten(1);
+                qDebug() << "Send";
             }
 
+            serial->waitForReadyRead(1);
+
             if (serial->bytesAvailable() > 0) {
-                serial->waitForReadyRead(1);
+                qDebug() <<serial->bytesAvailable();
                 QByteArray receiveData = serial->readAll();
+                qDebug() << receiveData.toHex('.');
 
                 for (int i = 0; i < receiveData.size(); ++i) {
                     sheller_push(&shell, receiveData[i]);
                 }
             }
 
-            uint8_t receivedDataBuff[SHELLER_USEFULL_DATA_LENGTH] = {0};
-            if (sheller_read(&shell, receivedDataBuff)) {
-                receiveQueue.push_back(QByteArray((char*)receivedDataBuff, SHELLER_USEFULL_DATA_LENGTH));
+
+            if (sheller_read(&shell, receivedDataBuff) == SHELLER_OK) {
+                QByteArray arr((char*)receivedDataBuff, SHELLER_USEFULL_DATA_LENGTH);
+                qDebug() << "Sheller find the message: " << arr.toHex('.');
+
+                receiveQueue.push_back(arr);
             }
         }
-        QThread().currentThread()->msleep(1);
+        //QThread().currentThread()->msleep(1);
     }
 
     qDebug() << "SerialPort::run end";
@@ -53,6 +60,8 @@ bool SerialPort::connectTo(QString portName, QString portSpeed)
     qDebug() << "connectTo " << portName << " ," << portSpeed;
     serial->setPortName(portName);
     serial->setBaudRate(portSpeed.toInt());
+    serial->setReadBufferSize(64);
+
     return serial->open(QIODevice::ReadWrite);
 }
 
@@ -76,6 +85,7 @@ QByteArray SerialPort::read()
 
 void SerialPort::write(QByteArray &data)
 {
+    qDebug() << "Push";
     transmittQueue.push_back(data);
 }
 

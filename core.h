@@ -25,6 +25,9 @@ public:
 
 public slots:
     void quit();
+
+signals:
+    void appendReceivedData(QByteArray data);
 };
 
 #endif // CORE_H

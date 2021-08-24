@@ -9,17 +9,17 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../../sheller/Source/sheller.cpp \
     core.cpp \
     main.cpp \
     mainwindow.cpp \
-    serialport.cpp \
-    sheller.cpp
+    serialport.cpp
 
 HEADERS += \
+    ../../sheller/Source/sheller.h \
     core.h \
     mainwindow.h \
-    serialport.h \
-    sheller.h
+    serialport.h
 
 FORMS += \
     mainwindow.ui

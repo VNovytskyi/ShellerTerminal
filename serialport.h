@@ -6,8 +6,9 @@
 #include <QObject>
 #include <QByteArray>
 #include <QSerialPort>
+#include <QQueue>
 
-#include "sheller.h"
+#include "../../sheller/Source/sheller.h"
 
 class SerialPort : public QThread
 {
@@ -16,8 +17,8 @@ class SerialPort : public QThread
     bool runEnabled = true;
     QSerialPort *serial = nullptr;
 
-    QList<QByteArray> receiveQueue;
-    QList<QByteArray> transmittQueue;
+    QQueue<QByteArray> receiveQueue;
+    QQueue<QByteArray> transmittQueue;
 
 public:
     SerialPort();

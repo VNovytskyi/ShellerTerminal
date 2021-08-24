@@ -10,7 +10,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     core = new Core();
+
+
+
     core->start();
+    QObject::connect(core, &Core::appendReceivedData, this, &MainWindow::displayData);
 
     updateSerialPortsFuture = QtConcurrent::run(this, &MainWindow::updateSerialPortsNames);
 }
@@ -101,7 +105,6 @@ void MainWindow::on_pushButton_4_clicked()
 
 void MainWindow::displayData(QByteArray data)
 {
-    //ui->receiveDataField-
-    //выводить текст
+    ui->textEdit->append(data.toHex('.'));
 }
 

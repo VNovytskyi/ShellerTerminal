@@ -24,7 +24,9 @@ void Core::run()
 
     while(runEnabled) {
         if (!serial->isEmpty()) {
-            qDebug() << "BL: Receive: " << serial->read().toHex('.');
+            QByteArray recvData = serial->read();
+            qDebug() << "BL: Receive: " << recvData.toHex('.');
+            emit appendReceivedData(recvData);
         }
         QThread().currentThread()->msleep(1);
     }
