@@ -71,5 +71,5 @@ Thumbs.db
 *.dll
 *.exe
 
-ShellerTerminal/*
 build/*
+bin/*
