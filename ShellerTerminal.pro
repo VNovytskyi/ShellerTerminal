@@ -25,6 +25,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+# Serial as external static library
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../Libs/serial/build/release/ -lserial
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../Libs/serial/build/debug/ -lserial
 else:unix: LIBS += -L$$PWD/../../Libs/serial/build/ -lserial
