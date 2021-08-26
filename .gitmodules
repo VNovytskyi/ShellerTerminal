@@ -1,0 +1,3 @@
+[submodule "Serial"]
+	path = Serial
+	url = https://github.com/VNovytskyi/Serial
