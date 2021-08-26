@@ -6,7 +6,7 @@
 Core::Core()
 {
     qDebug() << "Core::constructor called";
-    serial = new SerialPort;
+    serial = new Serial;
 }
 
 Core::~Core()
@@ -34,7 +34,7 @@ void Core::run()
     qDebug() << "Core::run end";
 }
 
-SerialPort *Core::getSerial()
+Serial *Core::getSerial()
 {
     return serial;
 }

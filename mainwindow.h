@@ -5,7 +5,7 @@
 #include <QtConcurrent/QtConcurrent>
 
 #include "core.h"
-#include "serialport.h"
+#include "serial.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

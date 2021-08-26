@@ -4,15 +4,14 @@
 #include <QTimer>
 #include <QThread>
 #include <QObject>
-#include <QSerialPortInfo>
 
-#include "serialport.h"
+#include "serial.h"
 
 class Core : public QThread
 {
     Q_OBJECT
 
-    SerialPort *serial = nullptr;
+    Serial *serial = nullptr;
     bool runEnabled = true;
 
 public:
@@ -21,7 +20,7 @@ public:
 
     void run() override;
 
-    SerialPort *getSerial();
+    Serial *getSerial();
 
 public slots:
     void quit();
