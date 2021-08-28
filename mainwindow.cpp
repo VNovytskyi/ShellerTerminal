@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     updateSerialPortsFuture = QtConcurrent::run(this, &MainWindow::updateSerialPortsNames);
 
     setWindowIcon(QIcon("ShellerIcon.ico"));
+    setFixedSize(QSize(500, 450));
 }
 
 MainWindow::~MainWindow()
@@ -114,5 +115,11 @@ void MainWindow::on_pushButton_4_clicked()
 void MainWindow::displayData(QByteArray data)
 {
     ui->textEdit->append(data.toHex('.'));
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    ui->textEdit->clear();
 }
 
