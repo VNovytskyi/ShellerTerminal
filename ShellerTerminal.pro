@@ -9,17 +9,11 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ../../Libs/serial/serial.cpp \
-    ../../Libs/sheller/Source/crc.c \
-    ../../Libs/sheller/Source/sheller.c \
     core.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
-    ../../Libs/serial/serial.h \
-    ../../Libs/sheller/Source/crc.h \
-    ../../Libs/sheller/Source/sheller.h \
     core.h \
     mainwindow.h
 
@@ -30,3 +24,17 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+# Serial as external static library
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../Libs/serial/build/release/ -lserial
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../Libs/serial/build/debug/ -lserial
+else:unix: LIBS += -L$$PWD/../../Libs/serial/build/ -lserial
+
+INCLUDEPATH += $$PWD/../../Libs/serial
+DEPENDPATH += $$PWD/../../Libs/serial
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../Libs/serial/build/release/libserial.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../Libs/serial/build/debug/libserial.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../Libs/serial/build/release/serial.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../Libs/serial/build/debug/serial.lib
+else:unix: PRE_TARGETDEPS += $$PWD/../../Libs/serial/build/libserial.a

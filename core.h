@@ -6,7 +6,7 @@
 #include <QThread>
 #include <QObject>
 
-#include "../../Libs/serial/serial.h"
+#include "serial.h"
 
 class Core : public QObject
 {
