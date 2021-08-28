@@ -6,7 +6,6 @@
 Core::Core()
 {
     qDebug() << "Core::constructor called";
-    serial = new Serial;
 }
 
 Core::~Core()
@@ -19,7 +18,7 @@ Core::~Core()
 void Core::run()
 {
     qDebug() << "Core::run begin";
-
+    serial = new Serial;
     serial->start();
 
     while(runEnabled) {
