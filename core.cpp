@@ -1,36 +1,30 @@
 #include "core.h"
 
-#include <QDebug>
-#include <QThread>
-
 Core::Core()
 {
-    qDebug() << "Core::constructor called";
+    serial = new Serial;
+    serial->moveToThread(&serialThread);
+    connect(&serialThread, &QThread::started, serial, &Serial::loop);
+    serialThread.start();
 }
 
 Core::~Core()
 {
-    serial->quit();
-    serial->wait();
+    serial->disableLoop();
+    serialThread.quit();
+    serialThread.wait();
     delete serial;
 }
 
-void Core::run()
+void Core::loop()
 {
-    qDebug() << "Core::run begin";
-    serial = new Serial;
-    serial->start();
-
-    while(runEnabled) {
+    while(loopEnabled) {
         if (!serial->isEmpty()) {
             QByteArray recvData = serial->read();
-            qDebug() << "BL: Receive: " << recvData.toHex('.');
             emit appendReceivedData(recvData);
         }
         QThread().currentThread()->msleep(1);
     }
-
-    qDebug() << "Core::run end";
 }
 
 Serial *Core::getSerial()
@@ -38,9 +32,8 @@ Serial *Core::getSerial()
     return serial;
 }
 
-void Core::quit()
+void Core::disableLoop()
 {
-    qDebug() << "Core::quit called";
-    runEnabled = false;
+    loopEnabled = false;
 }
 

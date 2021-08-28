@@ -2,28 +2,30 @@
 #define CORE_H
 
 #include <QTimer>
+#include <QDebug>
 #include <QThread>
 #include <QObject>
 
-#include "serial.h"
+#include "../../Libs/serial/serial.h"
 
-class Core : public QThread
+class Core : public QObject
 {
     Q_OBJECT
 
-    Serial *serial = nullptr;
-    bool runEnabled = true;
+    bool loopEnabled = true;
+
+    Serial  *serial = nullptr;
+    QThread serialThread;
 
 public:
     Core();
     ~Core();
 
-    void run() override;
-
+    void loop();
     Serial *getSerial();
 
 public slots:
-    void quit();
+    void disableLoop();
 
 signals:
     void appendReceivedData(QByteArray data);

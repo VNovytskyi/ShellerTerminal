@@ -4,45 +4,69 @@
 #include <QDebug>
 #include <QSerialPortInfo>
 
+void MainWindow::configApp()
+{
+
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    core = new Core();
+    setWindowIcon(QIcon("ShellerIcon.ico"));
+    setFixedSize(QSize(550, 450));
 
-    core->start();
+    QtConcurrent::run(this, &MainWindow::configApp);
+
+    core = new Core();
+    core->moveToThread(&coreThread);
+    QObject::connect(&coreThread, &QThread::started, core, &Core::loop);
     QObject::connect(core, &Core::appendReceivedData, this, &MainWindow::displayData);
+    coreThread.start();
 
     updateSerialPortsFuture = QtConcurrent::run(this, &MainWindow::updateSerialPortsNames);
-
-    setWindowIcon(QIcon("ShellerIcon.ico"));
-    setFixedSize(QSize(500, 450));
 }
 
 MainWindow::~MainWindow()
 {
+    core->disableLoop();
+    coreThread.quit();
+    coreThread.wait();
+    delete core;
+
     continueUpdatedSerialPorts = false;
     updateSerialPortsFuture.waitForFinished();
 
-    core->quit();
-    core->wait();
-
-    delete core;
     delete ui;
 }
 
 void MainWindow::on_serialButton_clicked()
 {
     if (ui->serialButton->text() == "Connect") {
-        if (core->getSerial()->connectTo(ui->serialName_ComboBox->currentText(), ui->serialSpeed_ComboBox->currentText())) {
-            qDebug() << "SerialPorts successffull open";
+        QString portName = ui->serialName_ComboBox->currentText();
+        QString portSpeed = ui->serialSpeed_ComboBox->currentText();
+
+        core->getSerial()->setSheller(ui->spinBox->value(), ui->spinBox_2->value(), ui->spinBox_3->value());
+        if (core->getSerial()->connectTo(portName, portSpeed)) {
             ui->serialButton->setText("Disconnect");
+            ui->statusBar->showMessage("Connected to " + portName + " with speed " + portSpeed);
+            ui->serialName_ComboBox->setEnabled(false);
+            ui->serialSpeed_ComboBox->setEnabled(false);
+
+            ui->spinBox->setEnabled(false);
+            ui->spinBox_2->setEnabled(false);
+            ui->spinBox_3->setEnabled(false);
         }
     } else {
         core->getSerial()->disconnect();
         ui->serialButton->setText("Connect");
+        ui->serialName_ComboBox->setEnabled(true);
+        ui->serialSpeed_ComboBox->setEnabled(true);
+        ui->spinBox->setEnabled(true);
+        ui->spinBox_2->setEnabled(true);
+        ui->spinBox_3->setEnabled(true);
     }
 }
 
@@ -50,22 +74,34 @@ void MainWindow::updateSerialPortsNames()
 {
     while(continueUpdatedSerialPorts) {
         static clock_t time = clock();
-        if ((clock() - time) >= 1000) {
+        if ((clock() - time) >= 100) {
             time = clock();
             auto info = QSerialPortInfo::availablePorts();
+            QString portNamesString = "Available ports: ";
             QList<QString> currentPortsNames;
             for (auto &el: info) {
+                portNamesString += el.portName() + " ";
                 currentPortsNames.push_back(el.portName());
+            }
+
+            if (!core->getSerial()->isConnected()) {
+                if (info.size()) {
+                    ui->statusBar->showMessage(portNamesString);
+                } else {
+                    ui->statusBar->showMessage("Not available ports");
+                }
             }
 
             if (currentPortsNames != portsNames) {
                 portsNames = currentPortsNames;
+                ui->serialName_ComboBox->setCurrentIndex(-1);
                 ui->serialName_ComboBox->clear();
                 if (currentPortsNames.size() > 0) {
                     ui->serialName_ComboBox->addItems(currentPortsNames);
                     ui->serialName_ComboBox->setCurrentIndex(0);
                 }
             }
+
         }
         QThread().currentThread()->msleep(1);
     }
@@ -117,9 +153,7 @@ void MainWindow::displayData(QByteArray data)
     ui->textEdit->append(data.toHex('.'));
 }
 
-
 void MainWindow::on_pushButton_3_clicked()
 {
     ui->textEdit->clear();
 }
-

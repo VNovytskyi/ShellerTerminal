@@ -5,7 +5,6 @@
 #include <QtConcurrent/QtConcurrent>
 
 #include "core.h"
-#include "serial.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,12 +15,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
     Core *core = nullptr;
+    QThread coreThread;
+
 
     QList<QString> portsNames;
     bool continueUpdatedSerialPorts = true;
     QFuture<void> updateSerialPortsFuture;
     void updateSerialPortsNames();
 
+    void configApp();
 
 public:
     MainWindow(QWidget *parent = nullptr);

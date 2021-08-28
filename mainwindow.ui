@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>539</width>
     <height>450</height>
    </rect>
   </property>
@@ -211,7 +211,7 @@
                 <item>
                  <widget class="QSpinBox" name="spinBox_2">
                   <property name="minimum">
-                   <number>8</number>
+                   <number>2</number>
                   </property>
                   <property name="maximum">
                    <number>64</number>
@@ -360,11 +360,12 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>500</width>
-     <height>26</height>
+     <width>539</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources/>
  <connections/>
